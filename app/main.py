@@ -1,4 +1,13 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.orm import Session
+
+from app.database import Base, engine, get_db
+from app.models import Task
+from app.schemas import TaskCreate, TaskResponse
+
+
+Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI(
     title="DevOps Task Platform",
@@ -21,20 +30,79 @@ def health_check():
     }
 
 
+@app.post("/tasks", response_model=TaskResponse)
+def create_task(task: TaskCreate, db: Session = Depends(get_db)):
 
-@app.get("/tasks")
-def get_tasks():
+    new_task = Task(
+        title=task.title
+    )
+
+    db.add(new_task)
+    db.commit()
+    db.refresh(new_task)
+
+    return new_task
+
+
+@app.get("/tasks", response_model=list[TaskResponse])
+def get_tasks(db: Session = Depends(get_db)):
+
+    tasks = db.query(Task).all()
+
+    return tasks
+
+
+@app.get("/tasks/{task_id}", response_model=TaskResponse)
+def get_task(task_id: int, db: Session = Depends(get_db)):
+
+    task = db.query(Task).filter(Task.id == task_id).first()
+
+    if not task:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found"
+        )
+
+    return task
+
+
+@app.put("/tasks/{task_id}", response_model=TaskResponse)
+def update_task(
+    task_id: int,
+    task_data: TaskCreate,
+    db: Session = Depends(get_db)
+):
+
+    task = db.query(Task).filter(Task.id == task_id).first()
+
+    if not task:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found"
+        )
+
+    task.title = task_data.title
+
+    db.commit()
+    db.refresh(task)
+
+    return task
+
+
+@app.delete("/tasks/{task_id}")
+def delete_task(task_id: int, db: Session = Depends(get_db)):
+
+    task = db.query(Task).filter(Task.id == task_id).first()
+
+    if not task:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found"
+        )
+
+    db.delete(task)
+    db.commit()
+
     return {
-        "tasks": [
-            {
-                "id": 1,
-                "title": "Learn Docker",
-                "completed": False
-            },
-            {
-                "id": 2,
-                "title": "Learn Kubernetes",
-                "completed": False
-            }
-        ]
+        "message": "Task deleted successfully"
     }
