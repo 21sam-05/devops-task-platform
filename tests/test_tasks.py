@@ -25,6 +25,13 @@ def test_health_check():
 
 
 def test_get_tasks():
+    response = client.post(
+        "/tasks",
+        json={"title": "CI test task"}
+    )
+
+    assert response.status_code == 200
+
     response = client.get("/tasks")
 
     assert response.status_code == 200
