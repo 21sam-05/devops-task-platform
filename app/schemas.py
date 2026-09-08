@@ -1,3 +1,5 @@
+# this defines the data our API accets and returns
+
 from pydantic import BaseModel
 
 

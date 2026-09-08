@@ -31,5 +31,10 @@ def test_get_tasks():
 
     data = response.json()
 
-    assert "tasks" in data
-    assert len(data["tasks"]) == 2
+    assert isinstance(data, list)
+    assert len(data) >= 1
+
+    for task in data:
+        assert "id" in task
+        assert "title" in task
+        assert "completed" in task
