@@ -40,3 +40,6 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/devops_tasks
         run: python -m pytest
+
+      - name: Build Docker image
+        run: docker build -t devops-task-platform-api .
