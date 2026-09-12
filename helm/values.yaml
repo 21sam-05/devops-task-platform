@@ -1,0 +1,24 @@
+replicaCount: 3
+
+image:
+  repository: ghcr.io/21sam-05/devops-task-platform-api
+  pullPolicy: Always
+  tag: "latest"
+
+service:
+  type: NodePort
+  port: 8000
+
+livenessProbe:
+  httpGet:
+    path: /docs
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 20
+
+readinessProbe:
+  httpGet:
+    path: /docs
+    port: 8000
+  initialDelaySeconds: 5
+  periodSeconds: 10
