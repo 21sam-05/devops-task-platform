@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import Base, engine, get_db
 from app.models import Task
 from app.schemas import TaskCreate, TaskResponse
-
+from prometheus_fastapi_instrumentator import Instrumentator
 
 Base.metadata.create_all(bind=engine)
 
@@ -14,7 +14,7 @@ app = FastAPI(
     description="A learning project for revising DevOps concepts",
     version="1.0.0"
 )
-
+Instrumentator().instrument(app).expose(app)
 
 @app.get("/")
 def root():
