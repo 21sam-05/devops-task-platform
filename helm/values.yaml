@@ -3,7 +3,7 @@ replicaCount: 5
 image:
   repository: ghcr.io/21sam-05/devops-task-platform-api
   pullPolicy: Always
-  tag: "latest"
+  tag: "6361ffe444d48b38a2d6e1f7bdc55425e79aaaf7"
 
 service:
   type: NodePort
